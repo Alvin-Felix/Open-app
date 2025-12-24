@@ -4,8 +4,38 @@
   <title>Cart</title>
 </head>
 <body>
+
 <h2>Your Cart</h2>
-<p>Cart coming soon</p>
+<div id="cartItems"></div>
+<p id="total"></p>
+
 <a href="index.html">Back</a>
+
+<script>
+const products = {
+  1: { name: "Idli", price: 10 },
+  2: { name: "Dosa", price: 40 }
+};
+
+const cart = JSON.parse(localStorage.getItem("cart")) || {};
+let total = 0;
+
+const cartDiv = document.getElementById("cartItems");
+
+for (let id in cart) {
+  const item = products[id];
+  const qty = cart[id];
+  const cost = item.price * qty;
+  total += cost;
+
+  const p = document.createElement("p");
+  p.innerText = `${item.name} x ${qty} = ₹${cost}`;
+  cartDiv.appendChild(p);
+}
+
+document.getElementById("total").innerText = `Total: ₹${total}`;
+</script>
+
 </body>
 </html>
+
