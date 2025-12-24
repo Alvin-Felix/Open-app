@@ -1,65 +1,45 @@
-body {
-  font-family: system-ui, -apple-system, BlinkMacSystemFont;
-  margin: 0;
-  background: #f6f6f6;
+const products = [
+  { id: 1, name: "Idli", price: 10 },
+  { id: 2, name: "Dosa", price: 40 }
+];
+
+function getCart() {
+  return JSON.parse(localStorage.getItem("cart")) || {};
 }
 
-.container {
-  max-width: 480px;
-  margin: auto;
-  background: #fff;
-  min-height: 100vh;
-  padding: 16px;
+function saveCart(cart) {
+  localStorage.setItem("cart", JSON.stringify(cart));
 }
 
-h1, h2 {
-  margin-top: 0;
+function addToCart(id) {
+  const cart = getCart();
+  cart[id] = (cart[id] || 0) + 1;
+  saveCart(cart);
+  renderProducts();
 }
 
-.product {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 12px 0;
-  border-bottom: 1px solid #eee;
+function renderProducts() {
+  const cart = getCart();
+  const productDiv = document.getElementById("products");
+  productDiv.innerHTML = "";
+
+  products.forEach(p => {
+    const qty = cart[p.id] || 0;
+
+    const div = document.createElement("div");
+    div.className = "product";
+    div.innerHTML = `
+      <div>
+        <strong>${p.name}</strong><br>
+        ₹${p.price}
+      </div>
+      <div>
+        <button onclick="addToCart(${p.id})">+</button>
+        ${qty}
+      </div>
+    `;
+    productDiv.appendChild(div);
+  });
 }
 
-.product button {
-  background: #000;
-  color: #fff;
-  border: none;
-  padding: 6px 14px;
-  border-radius: 6px;
-  font-size: 14px;
-}
-
-.cart-item {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 8px;
-}
-
-.total {
-  font-size: 18px;
-  font-weight: bold;
-  margin-top: 16px;
-}
-
-.primary-btn {
-  width: 100%;
-  padding: 14px;
-  background: #000;
-  color: #fff;
-  border: none;
-  font-size: 16px;
-  border-radius: 8px;
-  margin-top: 16px;
-}
-
-.link {
-  display: block;
-  margin-top: 16px;
-  text-align: center;
-  text-decoration: none;
-  color: #000;
-}
+renderProducts();
