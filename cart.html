@@ -22,25 +22,73 @@ const products = {
   2: { name: "Dosa", price: 40 }
 };
 
-const cart = JSON.parse(localStorage.getItem("cart")) || {};
-let total = 0;
-const cartDiv = document.getElementById("cartItems");
-
-for (let id in cart) {
-  const item = products[id];
-  const qty = cart[id];
-  const cost = item.price * qty;
-  total += cost;
-
-  const div = document.createElement("div");
-  div.className = "cart-item";
-  div.innerText = `${item.name} x ${qty} = ₹${cost}`;
-  cartDiv.appendChild(div);
+function getCart() {
+  return JSON.parse(localStorage.getItem("cart")) || {};
 }
 
-document.getElementById("total").innerText = `Total: ₹${total}`;
+function saveCart(cart) {
+  localStorage.setItem("cart", JSON.stringify(cart));
+}
+
+function renderCart() {
+  const cartDiv = document.getElementById("cartItems");
+  const totalDiv = document.getElementById("total");
+  cartDiv.innerHTML = "";
+
+  const cart = getCart();
+  let total = 0;
+
+  for (let id in cart) {
+    const item = products[id];
+    const qty = cart[id];
+    const cost = item.price * qty;
+    total += cost;
+
+    const div = document.createElement("div");
+    div.className = "cart-item";
+    div.innerHTML = `
+      <span>${item.name}</span>
+      <div>
+        <button onclick="decrease(${id})">−</button>
+        <span style="margin: 0 8px;">${qty}</span>
+        <button onclick="increase(${id})">+</button>
+      </div>
+      <span>₹${cost}</span>
+    `;
+    cartDiv.appendChild(div);
+  }
+
+  totalDiv.innerText = `Total: ₹${total}`;
+}
+
+function increase(id) {
+  const cart = getCart();
+  cart[id] = (cart[id] || 0) + 1;
+  saveCart(cart);
+  renderCart();
+}
+
+function decrease(id) {
+  const cart = getCart();
+  if (!cart[id]) return;
+
+  cart[id] -= 1;
+  if (cart[id] <= 0) {
+    delete cart[id];
+  }
+
+  saveCart(cart);
+  renderCart();
+}
 
 function checkout() {
+  const cart = getCart();
+  let total = 0;
+
+  for (let id in cart) {
+    total += products[id].price * cart[id];
+  }
+
   if (total === 0) {
     alert("Cart is empty");
     return;
@@ -56,17 +104,16 @@ function checkout() {
 
   message += `%0A*Total:* ₹${total}`;
 
-  const phoneNumber = "918754833972"; // WhatsApp Business number
+  const phoneNumber = "918754833972";
   const url = `https://wa.me/${phoneNumber}?text=${message}`;
 
-  // Open WhatsApp
   window.location.href = url;
-
-  // Clear cart after sending
   localStorage.removeItem("cart");
 }
 
+renderCart();
 </script>
+
 
 </body>
 </html>
