@@ -33,10 +33,11 @@ function renderProducts() {
         <strong>${p.name}</strong><br>
         ₹${p.price}
       </div>
-      <div>
-        <button onclick="addToCart(${p.id})">+</button>
-        ${qty}
-      </div>
+   <div>
+  <button onclick="addToCart(${p.id})">ADD</button>
+  ${qty > 0 ? ` x ${qty}` : ""}
+</div>
+
     `;
     productDiv.appendChild(div);
   });
