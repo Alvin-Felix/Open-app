@@ -45,8 +45,27 @@ function checkout() {
     alert("Cart is empty");
     return;
   }
-  window.location.href = "success.html";
+
+  let message = "🛒 *New Order*%0A%0A";
+
+  for (let id in cart) {
+    const item = products[id];
+    const qty = cart[id];
+    message += `${item.name} x ${qty} = ₹${item.price * qty}%0A`;
+  }
+
+  message += `%0A*Total:* ₹${total}`;
+
+  const phoneNumber = "918754833972"; // WhatsApp Business number
+  const url = `https://wa.me/${phoneNumber}?text=${message}`;
+
+  // Open WhatsApp
+  window.location.href = url;
+
+  // Clear cart after sending
+  localStorage.removeItem("cart");
 }
+
 </script>
 
 </body>
